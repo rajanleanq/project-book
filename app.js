@@ -1,4 +1,7 @@
+import "dotenv/config";
 import express from "express";
+import mongoose from "mongoose";
+import corsMiddleware from "./middleware/corsMiddleware.js";
 import {
   errorHandlerMiddleware,
   errorLoggerMiddleware,
@@ -11,6 +14,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use(corsMiddleware());
 //routes
 app.use("/books", bookRoutes);
 
@@ -19,6 +23,9 @@ app.use(errorLoggerMiddleware);
 app.use(errorHandlerMiddleware);
 app.use(invalidPathHandler);
 
-app.listen(4000, () => {
-  console.log("server is running on port 4000");
+mongoose.connect(process.env.DB_URL).then(() => {
+  console.log("Successfully connected to Database");
+  app.listen(4000, () => {
+    console.log("server is running on port 4000");
+  });
 });

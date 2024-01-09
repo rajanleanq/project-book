@@ -1,10 +1,17 @@
 import { Router } from "express";
-import { getBookRecommendation } from "../controller/bookController.js";
+import {
+  filterBookList,
+  getAllBookList,
+  getBookById,
+  getBookRecommendation,
+} from "../controller/bookController.js";
 
 const router = Router();
 
 router
-  //   .get("/books", getAllBookList)
-  .get("/recommendations/:userId", getBookRecommendation);
+  .get("/", getAllBookList)
+  .get("/search", filterBookList)
+  .get("/recommendations/:userId", getBookRecommendation)
+  .get("/:bookId", getBookById);
 
 export default router;
