@@ -4,7 +4,6 @@ import { parser } from "./index.js";
 
 //loads the csv and returns a 2D array
 const ratingsCSV = parser("ratings.csv");
-const booksCSV = parser("books.csv");
 
 // const bookCSVLength = booksCSV.length;
 
@@ -45,4 +44,4 @@ async function makeRecommendations(userId) {
   return recommendations.arraySync();
 }
 
-export { booksCSV, loadModel, makeRecommendations };
+export { loadModel, makeRecommendations };
