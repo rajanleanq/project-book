@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import List from "../model/listModel.js";
 import catchAsync from "../utils/catchAsync.js";
 
@@ -34,4 +35,40 @@ const getUserBookList = catchAsync(async (req, res) => {
   res.json(booklist);
 });
 
-export { addBookToList, getUserBookList };
+const removeBookFromList = catchAsync(async (req, res) => {
+  const { userId, bookId } = req.params;
+  const list = await List.findOne({ user_id: userId });
+
+  if (list.books.length === 0) {
+    return res.json({ msg: "You have no books in the list" });
+  }
+
+  //finds the list for the given userId and removes the bookId from the books array that matches the bookId
+  await List.findOneAndUpdate(
+    { user_id: userId },
+    { $pull: { books: { $in: [new mongoose.Types.ObjectId(bookId)] } } }
+  ).then(() => {
+    res.json({ msg: "Removed Successfully" });
+  });
+});
+
+const checkIfBookIsInList = catchAsync(async (req, res) => {
+  const { userId, bookId } = req.params;
+
+  const list = await List.findOne({
+    user_id: userId,
+    books: { $in: [new mongoose.Types.ObjectId(bookId)] },
+  });
+
+  if (list !== null) {
+    return res.json({ status: true, msg: "Book is present in the list" });
+  }
+  res.json({ status: false, msg: "Book is not present in the list" });
+});
+
+export {
+  addBookToList,
+  checkIfBookIsInList,
+  getUserBookList,
+  removeBookFromList,
+};
