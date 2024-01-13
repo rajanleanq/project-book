@@ -37,6 +37,7 @@ const errorLoggerMiddleware = (err, req, res, next) => {
 //middleware for handling the error
 const errorHandlerMiddleware = (err, req, res, next) => {
   const error = errorHandler(err);
+  console.log(error, "----error obj---");
 
   if (process.env.NODE_ENV === "development") {
     sendDevError(error, res);

@@ -1,11 +1,13 @@
 import Book from "../model/bookModel.js";
+import ApiFeatures from "../utils/ApiFeatures.js";
 import catchAsync from "../utils/catchAsync.js";
 import { makeRecommendations } from "../utils/modelUtils.js";
 
 const getBookRecommendation = catchAsync(async (req, res) => {
   const { userId } = req.params;
-  const result = req.query.result || 5;
   const recommendations = await makeRecommendations(userId);
+
+  const limit = req.query.limit || 10;
 
   //converts the 2D array into 1D array
   const recommendedBookId = recommendations.flat();
@@ -22,7 +24,7 @@ const getBookRecommendation = catchAsync(async (req, res) => {
         return 0;
       }
     })
-    .slice(0, result);
+    .slice(0, limit);
 
   //returns the book list whose id is contained in the recommendedBookIdSorted array
   const bookList = await Book.find({ id: recommendedBookIdSorted });
@@ -33,32 +35,28 @@ const getBookRecommendation = catchAsync(async (req, res) => {
   );
 
   res.json({
-    count: books.length,
-    books: books,
+    count: parseInt(limit),
+    data: books,
   });
 });
 
 const getAllBookList = catchAsync(async (req, res) => {
-  let page = (req.query.page >= 1 ? req.query.page : 1) - 1;
-  const resultsPerPage = req.query.results || 10;
-
-  const totalCount = await Book.countDocuments();
-  const books = await Book.find()
-    .limit(resultsPerPage)
-    .skip(resultsPerPage * page);
-  res.json({ totalCount, count: books.length, page: page + 1, books });
+  //if using pagination just define the query don't call await
+  const bookQuery = Book.find();
+  const result = await ApiFeatures(bookQuery, req);
+  res.json(result);
 });
 
 const getBookById = catchAsync(async (req, res) => {
   const bookId = req.params.bookId;
   const book = await Book.findById(bookId);
-  res.json({ book });
+  res.json({ data: book });
 });
 
 const searchBookList = catchAsync(async (req, res) => {
   const searchTerm = req.query.search;
   //search book list based on the search term that matches either the title or author of the book
-  const books = await Book.find({
+  const bookQuery = Book.find({
     $or: [
       {
         title: { $regex: searchTerm, $options: "i" },
@@ -68,33 +66,10 @@ const searchBookList = catchAsync(async (req, res) => {
       },
     ],
   });
-  res.json({ books });
+
+  const result = await ApiFeatures(bookQuery, req);
+
+  res.json(result);
 });
 
-const filterBookList = catchAsync(async (req, res) => {
-  let page = (req.query.page >= 1 ? req.query.page : 1) - 1;
-  const resultsPerPage = req.query.results || 10;
-
-  const totalCount = await Book.countDocuments();
-  const filterTerm = req.query.filter;
-  const order = req.query.order; //1 for asc and -1 for desc
-
-  //filter the book list based on filter term and sort them asc or desc order
-  const sortCriteria = {};
-  sortCriteria[filterTerm] = order === "asc" ? 1 : -1;
-
-  const books = await Book.find({})
-    .sort(sortCriteria)
-    .limit(resultsPerPage)
-    .skip(page * resultsPerPage);
-
-  res.json({ books, totalCount });
-});
-
-export {
-  filterBookList,
-  getAllBookList,
-  getBookById,
-  getBookRecommendation,
-  searchBookList,
-};
+export { getAllBookList, getBookById, getBookRecommendation, searchBookList };

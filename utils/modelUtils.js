@@ -1,17 +1,5 @@
 import * as tf from "@tensorflow/tfjs-node";
 import Book from "../model/bookModel.js";
-import { parser } from "./index.js";
-
-//loads the csv and returns a 2D array
-const ratingsCSV = parser("ratings.csv");
-
-// const bookCSVLength = booksCSV.length;
-
-//get the first columns from the booksCSV and extract only unique items i.e unique id of each books
-// const books_id = extractUniqueItems(getColumnFromCSV(ratingsCSV, 0, 1));
-
-//for first user
-// const user_id = Array.from({ length: bookCSVLength }).fill(400);
 
 async function loadModel() {
   try {

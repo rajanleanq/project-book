@@ -6,26 +6,27 @@ const handleDBDuplicateFields = (err) => {
   return new AppError(message, 400);
 };
 
-const handleValidationError = (err) => {
-  return new AppError(err.message, 400);
-};
-
 const errorHandler = (error) => {
   let errorObj = {};
 
   if (error.message === "Incorrect email") {
-    errorObj = "The email is not registered";
+    const message = "The email is not registered";
+    errorObj = new AppError(message, 400);
   }
   if (error.message === "Incorrect password") {
-    errorObj = "Incorrect password";
+    const message = "Incorrect password";
+    errorObj = new AppError(message, 400);
   }
 
   if (error.name === "CastError") {
-    errorObj = "Record doesn't exists for the given id or the id is invalid";
+    const message =
+      "Record doesn't exists for the given id or the id is invalid";
+    errorObj = new AppError(message, 400);
+    errorObj.isOperational = false;
   }
 
   if (error.name === "ValidationError") {
-    errorObj = handleValidationError(error);
+    errorObj = new AppError(error.message, 400);
   }
 
   if (error.code === 11000) {
