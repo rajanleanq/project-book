@@ -5,7 +5,7 @@ const listSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  book_id: [
+  books: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Book",

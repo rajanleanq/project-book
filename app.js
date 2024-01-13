@@ -7,7 +7,7 @@ import {
   errorLoggerMiddleware,
   invalidPathHandler,
 } from "./middleware/errorHandlerMiddleware.js";
-import { bookRoutes } from "./routes/index.js";
+import { bookRoutes, listRoutes } from "./routes/index.js";
 
 const app = express();
 
@@ -17,15 +17,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use(corsMiddleware());
 //routes
 app.use("/books", bookRoutes);
+app.use("/list", listRoutes);
 
 //middlewares
 app.use(errorLoggerMiddleware);
 app.use(errorHandlerMiddleware);
 app.use(invalidPathHandler);
 
-mongoose.connect(process.env.DB_URL).then(() => {
-  console.log("Successfully connected to Database");
-  app.listen(4000, () => {
-    console.log("server is running on port 4000");
-  });
-});
+mongoose
+  .connect(process.env.DB_URL)
+  .then(() => {
+    console.log("Successfully connected to Database");
+    app.listen(4000, () => {
+      console.log("server is running on port 4000");
+    });
+  })
+  .catch((err) => console.log(err));
