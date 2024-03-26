@@ -15,6 +15,8 @@ import {
   listRoutes,
   ratingRoutes,
 } from "./routes/index.js";
+import cors from 'cors';
+
 import("./utils/passport.js");
 
 const app = express();
@@ -32,12 +34,9 @@ app.use(
 
 app.use(passport.initialize());
 authMiddleware();
-app.use(
-  cors({
-    origin: "*",
-  })
-);
-
+app.use(cors({
+  origin: "*"
+}));
 //routes
 app.use(authRoutes);
 app.use(passport.authenticate("jwt", { session: false, failWithError: true }));
