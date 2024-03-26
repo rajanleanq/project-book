@@ -4,7 +4,6 @@ import session from "express-session";
 import mongoose from "mongoose";
 import passport from "passport";
 import authMiddleware from "./middleware/authMiddleware.js";
-import corsMiddleware from "./middleware/corsMiddleware.js";
 import {
   errorHandlerMiddleware,
   errorLoggerMiddleware,
@@ -33,7 +32,11 @@ app.use(
 
 app.use(passport.initialize());
 authMiddleware();
-app.use(corsMiddleware());
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
 //routes
 app.use(authRoutes);
